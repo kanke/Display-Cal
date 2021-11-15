@@ -8,6 +8,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
+import com.google.api.client.util.Sets;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
@@ -20,8 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CalendarQuickstart {
     private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
@@ -145,6 +145,22 @@ public class CalendarQuickstart {
                 "ICalUid," +
                 "Location," +
                 "Recurring EventId");
-        fetchEvents(service, "primary", null);
+
+        Set<String> emails = new HashSet<>(Arrays.asList(
+                "hathwal@adaptavist.com",
+                "swicks@adaptavist.com",
+                "rmartin@adaptavist.com",
+                "gstevenson@adaptavist.com",
+                "swilliams@adaptavist.com",
+                "azaid@adaptavist.com"
+        ));
+        emails.forEach(email -> {
+            try {
+                fetchEvents(service, email, null);
+            } catch (IOException e) {
+                System.err.println("Failed to fetch events: " + e.getMessage());
+                e.printStackTrace(System.err);
+            }
+        });
     }
 }
