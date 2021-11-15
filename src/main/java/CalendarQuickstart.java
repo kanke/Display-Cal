@@ -12,6 +12,7 @@ import com.google.api.client.util.Sets;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
@@ -162,5 +163,46 @@ public class CalendarQuickstart {
                 e.printStackTrace(System.err);
             }
         });
+
+        final CalendarList calendarList = service.calendarList()
+                .list()
+                .setShowHidden(true)
+                .execute();
+
+        calendarList.getItems().forEach(cal -> {
+            String calendarItem = String.format(
+                    "%s %s %s %s %s %s",
+                    cal.getId(),
+                    cal.getSummary(),
+                    cal.getDescription(),
+                    cal.getAccessRole(),
+                    cal.getSelected(),
+                    cal.getTimeZone()
+            );
+            System.out.println(calendarItem);
+        });
+
+        final com.google.api.services.calendar.model.Calendar calendar = service.calendars()
+                .get("cto@jonbevan.me.uk")
+                .execute();
+
+        Events events = service.events()
+                .list("cto@jonbevan.me.uk")
+                .setTimeMin(yearAgo)
+                .setTimeMax(now)
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .setShowHiddenInvitations(true)
+                .execute();
+        List<Event> items = events.getItems();
+        if (items.isEmpty()) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println("UPCOMING EVENTS");
+            System.out.println("\n");
+            for (Event event : items) {
+                formatRow(event);
+            }
+        }
     }
 }
